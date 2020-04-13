@@ -101,7 +101,11 @@ public class MainActivity extends AppCompatActivity
             updateRightMenu(this.sourcesMap);
         return super.onCreateOptionsMenu(menu);
     }
-
+    private void updateRightMenu(HashMap<String, ArrayList<Source>> sourcesMap)
+    {
+        for(String key: sourcesMap.keySet())
+            main_menu.add(key);
+    }
     // RIGHT Menu handle (menu item)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
@@ -131,10 +135,17 @@ public class MainActivity extends AppCompatActivity
             drawerItemList.add(source.getName());
         ((ArrayAdapter) drawerListView.getAdapter()).notifyDataSetChanged();
     }
-
     private void onLeftMenuItemClicked(int position)
     {
         drawerLayout.closeDrawer(drawerListView);
+
+        Log.d(TAG, "onLeftMenuItemClicked: "+drawerItemList.get(position));
+        // set sources as action bar title
+        TextView title = (TextView) getSupportActionBar().getCustomView();
+        title.setText(drawerItemList.get(position));
+
+        // we can replace the current layout by another one with Title, author, date etc but if those values are null we can't change the disposition
+        setContentView(R.layout.activity_main2);
     }
     
     // After onRestoreState has occured we need to set back the menu to its saved state
@@ -165,11 +176,6 @@ public class MainActivity extends AppCompatActivity
     {
         this.sourcesMap.clear();
         this.sourcesMap.putAll(sourcesMap);
-    }
-    private void updateRightMenu(HashMap<String, ArrayList<Source>> sourcesMap)
-    {
-        for(String key: sourcesMap.keySet())
-            main_menu.add(key);
     }
 
 
