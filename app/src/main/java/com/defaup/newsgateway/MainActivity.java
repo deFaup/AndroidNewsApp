@@ -48,25 +48,7 @@ public class MainActivity extends AppCompatActivity
         setCustomActionBar(); // need to be done before adding the drawer to the action bar
 
         // Drawer Layout Menu
-        drawerLayout = findViewById(R.id.drawerLayout);
-        drawerListView = findViewById(R.id.drawerList);
-        drawerListView.setAdapter(new ArrayAdapter<>(this,R.layout.drawer_layout_item, drawerItemList));
-        drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onLeftMenuItemClicked(position);
-            }
-        });
-        actionBarDrawerToggle = new ActionBarDrawerToggle(   // <== Important!
-                this,          /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open, /* "open drawer" description for accessibility */
-                R.string.drawer_close /* "close drawer" description for accessibility */
-        );
-        if (getSupportActionBar() != null) {  // <== Important! Make the drawer visible
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
+        createLeftMenu();
 
         // Download news sources
         if (savedInstanceState == null)
@@ -126,6 +108,30 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void createLeftMenu()
+    {
+        drawerLayout = findViewById(R.id.drawerLayout);
+        drawerListView = findViewById(R.id.drawerList);
+        drawerListView.setAdapter(new ArrayAdapter<>(this,R.layout.drawer_layout_item, drawerItemList));
+        drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onLeftMenuItemClicked(position);
+            }
+        });
+        // create the drawer icon and icon handler
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this,          /* host Activity */
+                drawerLayout,         /* DrawerLayout object */
+                R.string.drawer_open, /* "open drawer" description for accessibility */
+                R.string.drawer_close /* "close drawer" description for accessibility */
+        );
+        // Make the drawer icon visible
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+    }
     // set news sources for the given category
     private void updateLeftMenu(String category)
     {
@@ -189,7 +195,6 @@ public class MainActivity extends AppCompatActivity
         outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
         super.onSaveInstanceState(outState);
     }
-
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
     {
