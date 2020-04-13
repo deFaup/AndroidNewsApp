@@ -13,16 +13,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
-class AsyncSourceDownload extends AsyncTask<Void, Void, HashMap<String, ArrayList<Source>>>
+class AsyncSourceDownload extends AsyncTask<Void, Void, Map<String, ArrayList<Source>>>
 {
     private MainActivity mainActivity;
 
     AsyncSourceDownload(MainActivity mainActivity){this.mainActivity = mainActivity;}
 
     @Override
-    protected HashMap<String, ArrayList<Source>> doInBackground(Void... voids)
+    protected Map<String, ArrayList<Source>> doInBackground(Void... voids)
     {
         JSONObject jsonObject = getSources();
         if (jsonObject == null)
@@ -31,7 +32,7 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, HashMap<String, ArrayLis
         return parseSources(jsonObject);
     }
     @Override
-    protected void onPostExecute(HashMap<String, ArrayList<Source>> sourcesMap)
+    protected void onPostExecute(Map<String, ArrayList<Source>> sourcesMap)
     {
         mainActivity.onPostSourceDownload(sourcesMap);
     }
@@ -73,9 +74,9 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, HashMap<String, ArrayLis
             return jsonObject;
         }
     }
-    private HashMap<String, ArrayList<Source>> parseSources(JSONObject jsonObject)
+    private Map<String, ArrayList<Source>> parseSources(JSONObject jsonObject)
     {
-        HashMap<String, ArrayList<Source>> sourcesMap = new HashMap<>();
+        Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();
 
         try {
             if (jsonObject.has("sources")) {

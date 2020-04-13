@@ -22,12 +22,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity
 {
     private Menu main_menu = null;
-    private HashMap<String, ArrayList<Source>> sourcesMap = new HashMap<>();
+    private Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();;
 
     // Left drawer handle variables
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity
             updateRightMenu(this.sourcesMap);
         return super.onCreateOptionsMenu(menu);
     }
-    private void updateRightMenu(HashMap<String, ArrayList<Source>> sourcesMap)
+    private void updateRightMenu(Map<String, ArrayList<Source>> sourcesMap)
     {
         for(String key: sourcesMap.keySet())
             main_menu.add(key);
@@ -164,15 +165,15 @@ public class MainActivity extends AppCompatActivity
 
 
 /*** Post Async ***/
-    // Set HashMap with Key= Category of sources, Value=Source objects
+    // Set TreeMap with Key= Category of sources, Value=Source objects
     // Set Menu Item list with categories
-    public void onPostSourceDownload(HashMap<String, ArrayList<Source>> sourcesMap)
+    public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
     {
         Log.d(TAG, "onPostSourceDownload: ");
-        updateHashMap(sourcesMap);
+        updateTreeMap(sourcesMap);
         updateRightMenu(sourcesMap);
     }
-    private void updateHashMap(HashMap<String, ArrayList<Source>> sourcesMap)
+    private void updateTreeMap(Map<String, ArrayList<Source>> sourcesMap)
     {
         this.sourcesMap.clear();
         this.sourcesMap.putAll(sourcesMap);
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity
     {
         Log.d(TAG, "onSaveInstanceState: ");
         outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
-        outState.putSerializable(getString(R.string.HASHMAP), sourcesMap);
+        outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
         super.onSaveInstanceState(outState);
     }
 
@@ -195,8 +196,8 @@ public class MainActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "restoreInstanceState: ");
         chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
-        updateHashMap(
-                (HashMap<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
+        updateTreeMap(
+                (Map<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
 
         // build right menu not possible
         // build left menu OK
