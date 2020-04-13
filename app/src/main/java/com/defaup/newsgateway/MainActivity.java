@@ -1,14 +1,17 @@
 package com.defaup.newsgateway;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,11 +36,14 @@ public class MainActivity extends AppCompatActivity
     private ListView drawerListView;
     private ArrayList<String> drawerItemList = new ArrayList<>();
 
+    private String chosenCategory = "";
+    private static final String TAG = "Greg_MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
         setCustomActionBar(); // need to be done before adding the drawer to the action bar
 
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onDrawerItemClicked(position);
+                onLeftMenuItemClicked(position);
             }
         });
         actionBarDrawerToggle = new ActionBarDrawerToggle(   // <== Important!
@@ -63,7 +69,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         // Download news sources
-        new AsyncSourceDownload(this).execute();
+        if (savedInstanceState == null)
+            new AsyncSourceDownload(this).execute();
     }
 
     private void setCustomActionBar()
@@ -83,12 +90,16 @@ public class MainActivity extends AppCompatActivity
 
 /**** MENUS ****/
 
-    // Get reference to Right List Item Menu to change it dynamically
+    // Create Right Menu dynamically if possible
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about without this
         main_menu = menu;
+
+        if(!sourcesMap.isEmpty())
+            updateRightMenu(this.sourcesMap);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -105,8 +116,8 @@ public class MainActivity extends AppCompatActivity
         //TODO do the about activity with credentials to NEWS API
 
         // Update RIGHT menu
-        String category = item.getTitle().toString();
-        updateDrawerItemList(category);
+        chosenCategory = item.getTitle().toString();
+        updateLeftMenu(chosenCategory);
 
         return super.onOptionsItemSelected(item);
     }
@@ -126,20 +137,90 @@ public class MainActivity extends AppCompatActivity
     {
         drawerLayout.closeDrawer(drawerListView);
     }
-
+    
+    // After onRestoreState has occured we need to set back the menu to its saved state
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        Log.d(TAG, "onPostCreate: ");
+        actionBarDrawerToggle.syncState();
+    }
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "onConfigurationChanged: ");
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
 
 /*** Post Async ***/
-
     // Set HashMap with Key= Category of sources, Value=Source objects
     // Set Menu Item list with categories
     public void onPostSourceDownload(HashMap<String, ArrayList<Source>> sourcesMap)
     {
+        Log.d(TAG, "onPostSourceDownload: ");
+        updateHashMap(sourcesMap);
+        updateRightMenu(sourcesMap);
+    }
+    private void updateHashMap(HashMap<String, ArrayList<Source>> sourcesMap)
+    {
         this.sourcesMap.clear();
         this.sourcesMap.putAll(sourcesMap);
-        for(String key: sourcesMap.keySet())
-        {
-            main_menu.add(key);
-        }
     }
+    private void updateRightMenu(HashMap<String, ArrayList<Source>> sourcesMap)
+    {
+        for(String key: sourcesMap.keySet())
+            main_menu.add(key);
+    }
+
+
+/*** Save state ***/
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState)
+    {
+        Log.d(TAG, "onSaveInstanceState: ");
+        outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
+        outState.putSerializable(getString(R.string.HASHMAP), sourcesMap);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "restoreInstanceState: ");
+        chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
+        updateHashMap(
+                (HashMap<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
+
+        // build right menu not possible
+        // build left menu OK
+        if(!chosenCategory.isEmpty())
+            updateLeftMenu(chosenCategory);
+    }
+
+
+/*** Boot order ***/
+/*
+    onCreate:
+    onStart:
+    onPostCreate:
+    onCreateOptionsMenu:
+    onPostSourceDownload:
+
+    // screeen is tilted
+    onSaveInstanceState:
+
+    onCreate:
+    onStart:
+    onRestoreInstanceState:
+    onPostCreate:
+    onCreateOptionsMenu: -- menu is created after restore ! so we can't fill the menu dynamically the menu before that point
+    onPostSourceDownload:
+
+    To restore menu:
+    onSaveInstanceState: save the hashmap and the category that was chosen by the user
+    onRestoreInstanceState: restore both of them, restore the left menu if the user had chosen a category
+    onCreateOptionsMenu: restore the menu if the hashmap is not empty
+*/
 }
