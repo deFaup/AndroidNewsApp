@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -132,8 +131,8 @@ public class MainActivity extends AppCompatActivity
             drawerItemList.add(source.getName());
         ((ArrayAdapter) drawerListView.getAdapter()).notifyDataSetChanged();
     }
-    // LEFT Menu Handle
-    private void onDrawerItemClicked(int position)
+
+    private void onLeftMenuItemClicked(int position)
     {
         drawerLayout.closeDrawer(drawerListView);
     }
