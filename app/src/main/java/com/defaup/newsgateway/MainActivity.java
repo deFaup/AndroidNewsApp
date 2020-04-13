@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    // Fill LEFT Menu with news sources for the given category
-    private void updateDrawerItemList(String category)
+    // set news sources for the given category
+    private void updateLeftMenu(String category)
     {
         // The category that we get here comes from the hashmap so nullptr exception
         drawerItemList.clear();
