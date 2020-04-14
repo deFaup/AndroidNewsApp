@@ -10,13 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 class SourceAdapter extends ArrayAdapter<Source>
 {
     private List<Source> sources;
-    public SourceAdapter(@NonNull Context context, int resource, @NonNull List<Source> sources)
+    SourceAdapter(@NonNull Context context, int resource, @NonNull List<Source> sources)
     {
         super(context, resource, sources);
         this.sources = sources;
