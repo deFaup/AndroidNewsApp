@@ -17,11 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
-    private ArrayList<String> drawerItemList = new ArrayList<>();
+    private List<Source> drawerItemList = new ArrayList<>();
 
     private String chosenCategory = "";
     private static final String TAG = "Greg_MainActivity";
@@ -112,7 +112,11 @@ public class MainActivity extends AppCompatActivity
     {
         drawerLayout = findViewById(R.id.drawerLayout);
         drawerListView = findViewById(R.id.drawerList);
-        drawerListView.setAdapter(new ArrayAdapter<>(this,R.layout.drawer_layout_item, drawerItemList));
+
+        SourceAdapter sourceAdapter =
+                new SourceAdapter(this,R.layout.drawer_layout_item, drawerItemList);
+        drawerListView.setAdapter(sourceAdapter);
+
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -135,21 +139,17 @@ public class MainActivity extends AppCompatActivity
     // set news sources for the given category
     private void updateLeftMenu(String category)
     {
-        // The category that we get here comes from the hashmap so nullptr exception
+        // The category that we get here comes from the map so nullptr exception
         drawerItemList.clear();
-        ArrayList<Source> sources = sourcesMap.get(category);
-        for(Source source : sources)
-            drawerItemList.add(source.getName());
-        ((ArrayAdapter) drawerListView.getAdapter()).notifyDataSetChanged();
+        drawerItemList.addAll(sourcesMap.get(category));
+        ((SourceAdapter) drawerListView.getAdapter()).notifyDataSetChanged();
     }
     private void onLeftMenuItemClicked(int position)
     {
         drawerLayout.closeDrawer(drawerListView);
-
-        Log.d(TAG, "onLeftMenuItemClicked: "+drawerItemList.get(position));
         // set sources as action bar title
         TextView title = (TextView) getSupportActionBar().getCustomView();
-        title.setText(drawerItemList.get(position));
+        title.setText(drawerItemList.get(position).getName());
 
         // we can replace the current layout by another one with Title, author, date etc but if those values are null we can't change the disposition
         setContentView(R.layout.activity_main2);
