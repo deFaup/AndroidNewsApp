@@ -41,7 +41,7 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, Map<String, ArrayList<So
     private JSONObject getSources()
     {
         String url_ = String.format("%s%s",
-                mainActivity.getApplicationContext().getString(R.string.API_URL),
+                mainActivity.getApplicationContext().getString(R.string.SOURCE_URL),
                 mainActivity.getApplicationContext().getString(R.string.API_KEY));
 
         JSONObject jsonObject = null;
@@ -79,16 +79,21 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, Map<String, ArrayList<So
         Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();
 
         try {
-            if (jsonObject.has("sources")) {
+            if (jsonObject.has("sources"))
+            {
                 JSONArray sourcesArray = jsonObject.getJSONArray("sources");
-                for (int i = 0; i < sourcesArray.length(); ++i) {
+                for (int i = 0; i < sourcesArray.length(); ++i)
+                {
                     JSONObject sourceObject = sourcesArray.getJSONObject(i);
 
-                    //multi hash map
-                    Source source = new Source(
-                            sourceObject.getString("id"),
-                            sourceObject.getString("name"),
-                            sourceObject.getString("category"));
+                    String id = sourceObject.getString("id");
+                    if("null".equals(id)) continue;
+                    String name = sourceObject.getString("name");
+                    if("null".equals(name)) continue;
+                    String category = sourceObject.getString("category");
+                    if("null".equals(category)) continue;
+
+                    Source source = new Source(id, name, category);
 
                     // if the category is not yet in the map we instantiate a new array List and
                     // put a new category + arrayList associated to it
