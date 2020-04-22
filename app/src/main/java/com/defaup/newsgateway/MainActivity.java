@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about without this
         main_menu = menu;
 
+        // to restore the menu after rotation
         if(!sourcesMap.isEmpty())
             updateRightMenu(this.sourcesMap);
         return super.onCreateOptionsMenu(menu);
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
-        // Return if LEFT Menu (drawer menu) is at the origin of the call
+        // Return if LEFT Menu is at the origin of the call
         if (actionBarDrawerToggle.onOptionsItemSelected(item))
             return true;
 
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         chosenCategory = item.getTitle().toString();
         updateLeftMenu(chosenCategory);
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void createLeftMenu()
@@ -230,8 +231,7 @@ public class MainActivity extends AppCompatActivity
             updateLeftMenu(chosenCategory);
     }
 
-
-/*** Boot order ***/
+    /*** Boot order ***/
 /*
     onCreate:
     onStart:
