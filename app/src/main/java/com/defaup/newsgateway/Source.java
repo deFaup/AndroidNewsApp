@@ -1,6 +1,8 @@
 package com.defaup.newsgateway;
 
-class Source
+import java.io.Serializable;
+
+class Source implements Serializable
 {
     String id, name, category;
     Source(String id, String name, String category)
