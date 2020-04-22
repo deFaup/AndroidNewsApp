@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,7 +34,7 @@ public class MainActivity extends AppCompatActivity
     private Menu main_menu = null;
     private Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();;
 
-    // Left drawer handle variables
+    // Left menu handle variables
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity
 
     private String chosenCategory = "";
     private static final String TAG = "Greg_MainActivity";
+
+    private NewsReceiver newsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,6 +55,15 @@ public class MainActivity extends AppCompatActivity
 
         // Drawer Layout Menu
         createLeftMenu();
+
+        // Service
+        Intent intent = new Intent(MainActivity.this, NewsService.class);
+        intent.putExtra("RECEIVER_INTENT", getString(R.string.INTENT_TO_SERVICE));
+        intent.putExtra("BROADCAST_INTENT", getString(R.string.INTENT_TO_MAIN));
+        startService(intent);
+
+        // MainActiviy receiver: NewsReceiver
+        newsReceiver = new NewsReceiver();
 
         // Download news sources
         if (savedInstanceState == null)
@@ -136,7 +151,6 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setHomeButtonEnabled(true);
         }
     }
-    // set news sources for the given category
     private void updateLeftMenu(String category)
     {
         // The category that we get here comes from the map so nullptr exception
@@ -146,10 +160,16 @@ public class MainActivity extends AppCompatActivity
     }
     private void onLeftMenuItemClicked(int position)
     {
-        drawerLayout.closeDrawer(drawerListView);
         // set sources as action bar title
         TextView title = (TextView) getSupportActionBar().getCustomView();
         title.setText(drawerItemList.get(position).getName());
+
+        Log.d(TAG, "onLeftMenuItemClicked: sending broadcast to Service");
+        Intent intent = new Intent(getString(R.string.INTENT_TO_SERVICE));
+        intent.putExtra(Intent.ACTION_ATTACH_DATA, drawerItemList.get(position));
+        sendBroadcast(intent);
+
+        drawerLayout.closeDrawer(drawerListView);
 
         // we can replace the current layout by another one with Title, author, date etc but if those values are null we can't change the disposition
         setContentView(R.layout.activity_main2);
@@ -234,4 +254,41 @@ public class MainActivity extends AppCompatActivity
     onRestoreInstanceState: restore both of them, restore the left menu if the user had chosen a category
     onCreateOptionsMenu: restore the menu if the hashmap is not empty
 */
+
+    /*** Receiver ***/
+    @Override
+    protected void onResume()
+    {
+        IntentFilter intentFilter = new IntentFilter(getString(R.string.INTENT_TO_MAIN));
+        registerReceiver(newsReceiver, intentFilter);
+        super.onResume();
+    }
+    @Override
+    protected void onStop()
+    {
+        unregisterReceiver(newsReceiver);
+
+        Intent intent = new Intent(MainActivity.this, NewsService.class);
+        stopService(intent);
+
+        super.onStop();
+    }
+    /* News Receiver */
+    class NewsReceiver extends BroadcastReceiver
+    {
+
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (action == null || !action.equals(getString(R.string.INTENT_TO_MAIN))) {return;}
+
+            ArrayList<Article> articles = null;
+            if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
+            {
+                articles = (ArrayList<Article>) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+                Log.d(TAG, "MainActivity onReceive: ");
+            }
+        }
+    }
 }
