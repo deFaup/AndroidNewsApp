@@ -39,20 +39,22 @@ public class MainActivity extends AppCompatActivity
     private Menu main_menu = null;
     private Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();;
 
-    // Left menu handle variables
+    // media category picked by the user
+    private String chosenCategory = "";
+
+    // Left aka Drawer Layout Menu (menu with news media sources specific to chosenCategory)
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
     private List<Source> drawerItemList = new ArrayList<>();
 
-    private String chosenCategory = "";
     private static final String TAG = "Greg_MainActivity";
 
-    private ImageView background;
     private List<Fragment> fragments;
     private PageViewerAdapter pageAdapter;
     private ViewPager pager;
 
+    // Upon receipt of a broadcast msg from our service articles List is set
     private NewsReceiver newsReceiver;
     private List<Article> articles;
 
