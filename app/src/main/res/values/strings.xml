@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">News Gateway</string>
+    <string name="SOURCE_URL">https://newsapi.org/v2/sources?language=en&amp;country=us&amp;category=&amp;apiKey=</string>
+
+    <string name= "ARTICLE_BEGIN_URL">https://newsapi.org/v2/everything?sources=</string>
+    <string name= "ARTICLE_END_URL">&amp;language=en&amp;pageSize=100&amp;apiKey=</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- Saved instance KEYS -->
+    <string name="NEWS_CATEGORY">NEWS_CATEGORY</string>
+    <string name="HASHMAP">SOURCE_HASHMAP</string>
+
+    <!-- Broadcast filters -->
+    <string name="INTENT_TO_SERVICE">ACTION_MSG_TO_SVC</string>
+    <string name="INTENT_TO_MAIN">ACTION_MSG_TO_MAIN</string>
+
+
+
+</resources>
