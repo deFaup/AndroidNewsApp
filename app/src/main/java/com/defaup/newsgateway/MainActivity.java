@@ -37,6 +37,7 @@ import java.util.TreeMap;
 public class MainActivity extends AppCompatActivity
 {
     private Menu main_menu = null;
+    //TreeMap with Key=  Categories of news , Value=List of media sources for this category
     private Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();;
 
     // media category picked by the user
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity
     private NewsReceiver newsReceiver;
     private List<Article> articles;
 
+    private ImageView background;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -66,7 +69,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         setCustomActionBar(); // need to be done before adding the drawer to the action bar
 
-        // Drawer Layout Menu (menu with news media sources specific to a chosen category)
         createLeftMenu();
 
         // Start service: MainAct broadcast to its service the news source whose articles need to
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity
         newsReceiver = new NewsReceiver();
 
         // ViewPager to swipe between fragments (==articles)
+        // PageAdapter to handle the swiping (with the FragmentManager)
         fragments = new ArrayList<>();
         pageAdapter = new PageViewerAdapter(getSupportFragmentManager());
         pager = findViewById(R.id.pager);
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity
         // Background (background present while no articles have been displayed)
         background = findViewById(R.id.background);
 
-        // Download news sources
+        // Download news sources (need to be completed after onCreateOptionsMenu otherwise nullptr excep on main_menu)
         if (savedInstanceState == null)
             new AsyncSourceDownload(this).execute();
     }
@@ -220,8 +223,6 @@ public class MainActivity extends AppCompatActivity
 
 
 /*** Post Async ***/
-    // Set TreeMap with Key= Category of sources, Value=List of media sources for this category
-    // Set Menu Item list with categories
     public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
     {
         Log.d(TAG, "onPostSourceDownload: ");
@@ -298,7 +299,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-/*** ViewPager and Fragment ***/
+/*** ViewPager Adapter and Fragment ***/
     private class PageViewerAdapter extends FragmentPagerAdapter
     {
         private long baseId = 0;
@@ -353,7 +354,9 @@ public class MainActivity extends AppCompatActivity
             pageAdapter.notifyChangeInPosition(i);
 
         fragments.clear();
-        for (int i = 0; i < articles.size(); i++) {
+        for (int i = 0; i < articles.size(); i++)
+        {
+            // article i is displayed as "article i+1 out of articles.size()
             fragments.add(
                     FragmentArticle.newInstance(articles.get(i), i+1, articles.size()));
         }
