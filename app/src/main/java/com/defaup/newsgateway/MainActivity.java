@@ -242,7 +242,10 @@ public class MainActivity extends AppCompatActivity
     {
         Log.d(TAG, "onSaveInstanceState: ");
         outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
+        outState.putInt("PAGER_INDEX",pager.getCurrentItem());
+
         outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
+        outState.putSerializable("ARTICLES", (ArrayList)articles);
         super.onSaveInstanceState(outState);
     }
     @Override
@@ -250,7 +253,16 @@ public class MainActivity extends AppCompatActivity
     {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "restoreInstanceState: ");
+
         chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
+        int pagerIndex = savedInstanceState.getInt("PAGER_INDEX");
+        List<Article> articles = (ArrayList)savedInstanceState.getSerializable("ARTICLES");
+
+        Log.d(TAG, "onRestoreInstanceState: pagerIndex=" + pagerIndex);
+
+        if(articles != null)
+            background.setVisibility(View.GONE);
+        updateViewPager(articles, pagerIndex);
         updateTreeMap(
                 (Map<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
 
@@ -265,6 +277,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume()
     {
+        Log.d(TAG, "onResume: ");
         IntentFilter intentFilter = new IntentFilter(getString(R.string.INTENT_TO_MAIN));
         registerReceiver(newsReceiver, intentFilter);
         super.onResume();
@@ -380,11 +393,17 @@ public class MainActivity extends AppCompatActivity
     onStart:
     onRestoreInstanceState:
     onPostCreate:
-    onCreateOptionsMenu: -- menu is created after restore ! so we can't fill the menu dynamically the menu before that point
+    onCreateOptionsMenu: -- RIGHT menu is created after restore ! so we can't fill the menu dynamically the menu before that point
     onPostSourceDownload:
 
     To restore menu:
-    onSaveInstanceState: save the hashmap and the category that was chosen by the user
-    onRestoreInstanceState: restore both of them, restore the left menu if the user had chosen a category
-    onCreateOptionsMenu: restore the menu if the hashmap is not empty
+    onSaveInstanceState:
+        save the hashmap + source category that was chosen by the user
+        + articles + article chosen by the user
+    onRestoreInstanceState:
+        restore all 4 objects
+        re-fill the left menu if the user had chosen a category
+        restore the article that was displayed if there was one
+
+    onCreateOptionsMenu:    restore the RIGHT menu if the hashmap is not empty
 */
