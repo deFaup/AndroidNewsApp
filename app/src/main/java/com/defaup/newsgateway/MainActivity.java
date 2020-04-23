@@ -7,6 +7,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -43,6 +48,11 @@ public class MainActivity extends AppCompatActivity
     private String chosenCategory = "";
     private static final String TAG = "Greg_MainActivity";
 
+    private ImageView background;
+    private List<Fragment> fragments;
+    private MyPageAdapter pageAdapter;
+    private ViewPager pager;
+
     private NewsReceiver newsReceiver;
 
     @Override
@@ -64,6 +74,15 @@ public class MainActivity extends AppCompatActivity
 
         // MainActiviy receiver: NewsReceiver
         newsReceiver = new NewsReceiver();
+
+        // ViewPager to swipe between fragments (==articles)
+        fragments = new ArrayList<>();
+        pageAdapter = new MyPageAdapter(getSupportFragmentManager());
+        pager = findViewById(R.id.pager);
+        pager.setAdapter(pageAdapter);
+
+        // Background (background present while no articles have been displayed)
+        background = findViewById(R.id.background);
 
         // Download news sources
         if (savedInstanceState == null)
@@ -161,7 +180,10 @@ public class MainActivity extends AppCompatActivity
     }
     private void onLeftMenuItemClicked(int position)
     {
-        // set sources as action bar title
+        // Make background image disappear
+        background.setVisibility(View.GONE);
+
+        // set news media source as action bar title
         TextView title = (TextView) getSupportActionBar().getCustomView();
         title.setText(drawerItemList.get(position).getName());
 
@@ -287,8 +309,67 @@ public class MainActivity extends AppCompatActivity
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
                 articles = (ArrayList<Article>) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+                updateViewPager(articles);
                 Log.d(TAG, "MainActivity onReceive: ");
             }
         }
+    }
+
+
+/*** ViewPager and Fragment ***/
+    private class MyPageAdapter extends FragmentPagerAdapter
+    {
+        private long baseId = 0;
+
+        MyPageAdapter(FragmentManager fm) {
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        }
+
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // give an ID different from position when position has been changed
+            return baseId + position;
+        }
+
+        /**
+         * Notify that the position of a fragment has been changed.
+         * Create a new ID for each position to force recreation of the fragment
+         * @param n number of items which have been changed
+         */
+        void notifyChangeInPosition(int n) {
+            // shift the ID returned by getItemId outside the range of all previous fragments
+            baseId += getCount() + n;
+        }
+
+    }
+    private void updateViewPager(List<Article> articles)
+    {
+        for (int i = 0; i < pageAdapter.getCount(); i++)
+            pageAdapter.notifyChangeInPosition(i);
+
+        fragments.clear();
+        for (int i = 0; i < articles.size(); i++) {
+            fragments.add(
+                    FragmentArticle.newInstance(articles.get(i), i+1, articles.size()));
+        }
+
+        pageAdapter.notifyDataSetChanged();
+        pager.setCurrentItem(0);
     }
 }
