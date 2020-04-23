@@ -15,7 +15,6 @@ public class NewsService extends Service
     private static final String TAG = "Greg_NewsService";
     ArrayList<Article> articles = new ArrayList<>();
     ServiceReceiver serviceReceiver;
-    String receiverIntent, broadcastIntent;
 
     @Override
     public IBinder onBind(Intent intent) {return null;}
@@ -23,19 +22,11 @@ public class NewsService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        Log.d(TAG, "onStartCommand: ");
+
         serviceReceiver = new ServiceReceiver();
-        Log.d(TAG, "onStartCommand: Service 1");
-        if(intent.hasExtra("RECEIVER_INTENT"))
-        {
-            Log.d(TAG, "onStartCommand: Service 2");
-            Log.d(TAG, "onStartCommand: ");
-            // register as a receiver to INTENT_TO_SERVICE (cf strings.xml) filters
-            receiverIntent = intent.getStringExtra("RECEIVER_INTENT");
-            IntentFilter filter = new IntentFilter(receiverIntent);
-            registerReceiver(serviceReceiver, filter);
-        }
-        if(intent.hasExtra("BROADCAST_INTENT"))
-            broadcastIntent = intent.getStringExtra("BROADCAST_INTENT");
+        IntentFilter filter = new IntentFilter(getApplicationContext().getString(R.string.INTENT_TO_SERVICE));
+        registerReceiver(serviceReceiver, filter);
 
         return Service.START_NOT_STICKY;
     }
@@ -48,12 +39,13 @@ public class NewsService extends Service
         super.onDestroy();
     }
 
+    // send articles to MainActivity through a broadcast
     public void setArticles(ArrayList<Article> articles)
     {
         this.articles.clear();
         this.articles.addAll(articles);
 
-        Intent intent = new Intent(broadcastIntent);
+        Intent intent = new Intent(getApplicationContext().getString(R.string.INTENT_TO_MAIN));
         intent.putExtra(Intent.ACTION_ATTACH_DATA, articles);
         sendBroadcast(intent);
     }
@@ -66,9 +58,9 @@ public class NewsService extends Service
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action == null || !action.equals(receiverIntent)) {return;}
+            if (action == null || !action.equals(getString(R.string.INTENT_TO_SERVICE))) {return;}
 
-            Source source = null;
+            Source source;
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
                 source = (Source) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);

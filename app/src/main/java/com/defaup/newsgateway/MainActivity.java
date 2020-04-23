@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity
         // Start service: MainAct broadcast to its service the news source whose articles need to
         // be downloaded. When this is done the service do the reverse and send back the articles
         Intent intent = new Intent(MainActivity.this, NewsService.class);
-        intent.putExtra("RECEIVER_INTENT", getString(R.string.INTENT_TO_SERVICE));
-        intent.putExtra("BROADCAST_INTENT", getString(R.string.INTENT_TO_MAIN));
         startService(intent);
 
         // MainActiviy receiver: NewsReceiver
