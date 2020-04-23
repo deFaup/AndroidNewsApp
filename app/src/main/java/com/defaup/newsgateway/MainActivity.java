@@ -63,10 +63,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         setCustomActionBar(); // need to be done before adding the drawer to the action bar
 
-        // Drawer Layout Menu
+        // Drawer Layout Menu (menu with news media sources specific to a chosen category)
         createLeftMenu();
 
-        // Service
+        // Start service: MainAct broadcast to its service the news source whose articles need to
+        // be downloaded. When this is done the service do the reverse and send back the articles
         Intent intent = new Intent(MainActivity.this, NewsService.class);
         intent.putExtra("RECEIVER_INTENT", getString(R.string.INTENT_TO_SERVICE));
         intent.putExtra("BROADCAST_INTENT", getString(R.string.INTENT_TO_MAIN));
@@ -106,15 +107,15 @@ public class MainActivity extends AppCompatActivity
 
 /**** MENUS ****/
 
-    // Create Right Menu dynamically if possible
+    // Create Right Menu dynamically (and fill it if possible)
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         Log.d(TAG, "onCreateOptionsMenu: ");
-        getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about without this
+        getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about item without this
         main_menu = menu;
 
-        // to restore the menu after rotation
+        // Restore the menu after rotation
         if(!sourcesMap.isEmpty())
             updateRightMenu(this.sourcesMap);
         return super.onCreateOptionsMenu(menu);
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity
             return true;
         //TODO do the about activity with credentials to NEWS API
 
-        // Update RIGHT menu
+        // Save the news category selected by the user to restore it when needed
         chosenCategory = item.getTitle().toString();
         updateLeftMenu(chosenCategory);
 
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         drawerListView = findViewById(R.id.drawerList);
 
         SourceAdapter sourceAdapter =
-                new SourceAdapter(this,R.layout.drawer_layout_item, drawerItemList);
+                new SourceAdapter(this, R.layout.drawer_layout_item, drawerItemList);
         drawerListView.setAdapter(sourceAdapter);
 
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -159,20 +160,24 @@ public class MainActivity extends AppCompatActivity
             }
         });
         // create the drawer icon and icon handler
-        actionBarDrawerToggle = new ActionBarDrawerToggle(
-                this,          /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open, /* "open drawer" description for accessibility */
-                R.string.drawer_close /* "close drawer" description for accessibility */
+        actionBarDrawerToggle = new ActionBarDrawerToggle
+        (
+            this,          /* host Activity */
+            drawerLayout,         /* DrawerLayout object */
+            R.string.drawer_open, /* "open drawer" description for accessibility */
+            R.string.drawer_close     /* "close drawer" description for accessibility */
         );
         // Make the drawer icon visible
-        if (getSupportActionBar() != null) {
+        if (getSupportActionBar() != null)
+        {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
     }
     private void updateLeftMenu(String category)
     {
+        if (category == null || category.isEmpty()) return;
+
         // The category that we get here comes from the map so nullptr exception
         drawerItemList.clear();
         drawerItemList.addAll(sourcesMap.get(category));
@@ -187,18 +192,16 @@ public class MainActivity extends AppCompatActivity
         TextView title = (TextView) getSupportActionBar().getCustomView();
         title.setText(drawerItemList.get(position).getName());
 
+        // Send brodacast to Service
         Log.d(TAG, "onLeftMenuItemClicked: sending broadcast to Service");
         Intent intent = new Intent(getString(R.string.INTENT_TO_SERVICE));
         intent.putExtra(Intent.ACTION_ATTACH_DATA, drawerItemList.get(position));
         sendBroadcast(intent);
 
         drawerLayout.closeDrawer(drawerListView);
-
-        // we can replace the current layout by another one with Title, author, date etc but if those values are null we can't change the disposition
-        setContentView(R.layout.activity_main2);
     }
     
-    // After onRestoreState has occured we need to set back the menu to its saved state
+    // After onRestoreState has occured we need to set back the menu to its saved state?
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity
 
 
 /*** Post Async ***/
-    // Set TreeMap with Key= Category of sources, Value=Source objects
+    // Set TreeMap with Key= Category of sources, Value=List of media sources for this category
     // Set Menu Item list with categories
     public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
     {
@@ -253,31 +256,8 @@ public class MainActivity extends AppCompatActivity
             updateLeftMenu(chosenCategory);
     }
 
-    /*** Boot order ***/
-/*
-    onCreate:
-    onStart:
-    onPostCreate:
-    onCreateOptionsMenu:
-    onPostSourceDownload:
 
-    // screeen is tilted
-    onSaveInstanceState:
-
-    onCreate:
-    onStart:
-    onRestoreInstanceState:
-    onPostCreate:
-    onCreateOptionsMenu: -- menu is created after restore ! so we can't fill the menu dynamically the menu before that point
-    onPostSourceDownload:
-
-    To restore menu:
-    onSaveInstanceState: save the hashmap and the category that was chosen by the user
-    onRestoreInstanceState: restore both of them, restore the left menu if the user had chosen a category
-    onCreateOptionsMenu: restore the menu if the hashmap is not empty
-*/
-
-    /*** Receiver ***/
+/*** Receiver ***/
     @Override
     protected void onResume()
     {
@@ -298,7 +278,6 @@ public class MainActivity extends AppCompatActivity
     /* News Receiver */
     class NewsReceiver extends BroadcastReceiver
     {
-
         @Override
         public void onReceive(Context context, Intent intent)
         {
@@ -373,3 +352,27 @@ public class MainActivity extends AppCompatActivity
         pager.setCurrentItem(0);
     }
 }
+
+/*** Boot order ***/
+/*
+    onCreate:
+    onStart:
+    onPostCreate:
+    onCreateOptionsMenu:
+    onPostSourceDownload:
+
+    // screeen is tilted
+    onSaveInstanceState:
+
+    onCreate:
+    onStart:
+    onRestoreInstanceState:
+    onPostCreate:
+    onCreateOptionsMenu: -- menu is created after restore ! so we can't fill the menu dynamically the menu before that point
+    onPostSourceDownload:
+
+    To restore menu:
+    onSaveInstanceState: save the hashmap and the category that was chosen by the user
+    onRestoreInstanceState: restore both of them, restore the left menu if the user had chosen a category
+    onCreateOptionsMenu: restore the menu if the hashmap is not empty
+*/

@@ -24,9 +24,10 @@ public class NewsService extends Service
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         serviceReceiver = new ServiceReceiver();
-
+        Log.d(TAG, "onStartCommand: Service 1");
         if(intent.hasExtra("RECEIVER_INTENT"))
         {
+            Log.d(TAG, "onStartCommand: Service 2");
             Log.d(TAG, "onStartCommand: ");
             // register as a receiver to INTENT_TO_SERVICE (cf strings.xml) filters
             receiverIntent = intent.getStringExtra("RECEIVER_INTENT");
