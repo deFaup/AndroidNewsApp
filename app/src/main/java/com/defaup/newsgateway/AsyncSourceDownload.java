@@ -77,7 +77,7 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, Map<String, ArrayList<So
     private Map<String, ArrayList<Source>> parseSources(JSONObject jsonObject)
     {
         Map<String, ArrayList<Source>> sourcesMap = new TreeMap<>();
-
+        ArrayList<Source> allSources = new ArrayList<>();
         try {
             if (jsonObject.has("sources"))
             {
@@ -99,20 +99,20 @@ class AsyncSourceDownload extends AsyncTask<Void, Void, Map<String, ArrayList<So
                     // put a new category + arrayList associated to it
                     // else we get the arrayList reference and add a new source Object in it.
                     ArrayList<Source> sourceArrayList = sourcesMap.get(source.getCategory());
-                    if (sourceArrayList == null) {
+                    if (sourceArrayList == null)
+                    {
                         sourceArrayList = new ArrayList<>();
                         sourceArrayList.add(source);
                         sourcesMap.put(source.getCategory(), sourceArrayList);
-                    } else {
-                        sourceArrayList.add(source);
                     }
+                    else sourceArrayList.add(source);
+                    allSources.add(source);
                 }
+                sourcesMap.put("all", allSources);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-            return sourcesMap;
         }
+        catch (JSONException e) {e.printStackTrace();}
+        finally {return sourcesMap;}
     }
 
 }
