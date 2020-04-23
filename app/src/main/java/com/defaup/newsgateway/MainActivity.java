@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
 
     private ImageView background;
     private List<Fragment> fragments;
-    private MyPageAdapter pageAdapter;
+    private PageViewerAdapter pageAdapter;
     private ViewPager pager;
 
     private NewsReceiver newsReceiver;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         // ViewPager to swipe between fragments (==articles)
         fragments = new ArrayList<>();
-        pageAdapter = new MyPageAdapter(getSupportFragmentManager());
+        pageAdapter = new PageViewerAdapter(getSupportFragmentManager());
         pager = findViewById(R.id.pager);
         pager.setAdapter(pageAdapter);
 
@@ -297,11 +297,11 @@ public class MainActivity extends AppCompatActivity
 
 
 /*** ViewPager and Fragment ***/
-    private class MyPageAdapter extends FragmentPagerAdapter
+    private class PageViewerAdapter extends FragmentPagerAdapter
     {
         private long baseId = 0;
 
-        MyPageAdapter(FragmentManager fm) {
+        PageViewerAdapter(FragmentManager fm) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
