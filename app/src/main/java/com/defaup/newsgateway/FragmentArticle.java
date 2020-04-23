@@ -1,7 +1,9 @@
 package com.defaup.newsgateway;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,8 +24,9 @@ import java.util.Date;
 public class FragmentArticle extends Fragment
 {
     private static final String TAG = "Greg_FragmentArticle";
+    private String articleUrl;
+
     public FragmentArticle(){};
-    private Picasso picasso;
 
     static public FragmentArticle newInstance
             (Article article, int index, int max)
@@ -43,14 +46,13 @@ public class FragmentArticle extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
-        picasso = new Picasso.Builder(getContext()).build();
-
         View fragmentView = inflater.inflate(R.layout.fragment_layout, container, false);
         Bundle args = getArguments();
         if (args == null) return null;
 
         final Article article = (Article) args.getSerializable("ARTICLE_OBJECT");
         if (article == null) return null;
+        this.articleUrl = article.url;
 
         LinearLayout linearLayout = fragmentView.findViewById(R.id.fragmentLinearLayout);
         TextView textView;
@@ -63,6 +65,7 @@ public class FragmentArticle extends Fragment
             textView.setTextSize(24);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setTypeface(Typeface.DEFAULT_BOLD);
+            setOnClick(textView);
             linearLayout.addView(textView);
         }
         if (article.publishedAt != null)
@@ -96,10 +99,13 @@ public class FragmentArticle extends Fragment
         }
         if(article.urlToImage != null)
         {
+            Picasso picasso = new Picasso.Builder(getContext()).build();
+
             ImageView imageView = new ImageView(getContext());
             picasso.load(article.urlToImage).error(R.drawable.brokenimage)
                     .placeholder(R.drawable.placeholder)
                     .into(imageView);
+            setOnClick(imageView);
             linearLayout.addView(imageView);
         }
         if (article.description != null)
@@ -109,7 +115,7 @@ public class FragmentArticle extends Fragment
             textView.setText(article.description);
             textView.setTextSize(18);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-
+            setOnClick(textView);
             linearLayout.addView(textView);
         }
 
@@ -125,4 +131,18 @@ public class FragmentArticle extends Fragment
         }
         return fragmentView;
     }
+
+    private void setOnClick(View view)
+    {
+        view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v)
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(articleUrl));
+            startActivity(intent);
+        }
+    });
+    }
+
 }
