@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager pager;
 
     private NewsReceiver newsReceiver;
+    private List<Article> articles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -287,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             ArrayList<Article> articles = null;
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
-                articles = (ArrayList<Article>) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+                List<Article> articles = (ArrayList) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
                 updateViewPager(articles);
                 Log.d(TAG, "MainActivity onReceive: ");
             }
@@ -337,8 +338,15 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-    private void updateViewPager(List<Article> articles)
+    private void updateViewPager(List<Article> articles) {
+        updateViewPager(articles, 0);
+    }
+    private void updateViewPager(List<Article> articles, int currentItem)
     {
+        if(articles == null || articles.isEmpty())
+            return;
+
+        this.articles = articles;
         for (int i = 0; i < pageAdapter.getCount(); i++)
             pageAdapter.notifyChangeInPosition(i);
 
