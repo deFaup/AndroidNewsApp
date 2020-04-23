@@ -288,7 +288,6 @@ public class MainActivity extends AppCompatActivity
             String action = intent.getAction();
             if (action == null || !action.equals(getString(R.string.INTENT_TO_MAIN))) {return;}
 
-            ArrayList<Article> articles = null;
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
                 List<Article> articles = (ArrayList) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
@@ -362,7 +361,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         pageAdapter.notifyDataSetChanged();
-        pager.setCurrentItem(0);
+        pager.setCurrentItem(currentItem);
     }
 }
 
