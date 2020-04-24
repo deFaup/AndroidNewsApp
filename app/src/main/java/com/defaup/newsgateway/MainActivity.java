@@ -134,8 +134,11 @@ public class MainActivity extends AppCompatActivity
             return true;
 
         if (item.getItemId() == R.id.menuAbout)
+        {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
             return true;
-        //TODO do the about activity with credentials to NEWS API
+        }
 
         // Save the news category selected by the user to restore it when needed
         chosenCategory = item.getTitle().toString();
