@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setCustomView(title);
     }
 
-/**** MENUS ****/
+/**** Right menu (categories) ****/
 
     // Create Right Menu dynamically (and fill it if possible)
     @Override
@@ -147,6 +148,8 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
+/**** Left menu (drawer with sources) ****/
 
     private void createLeftMenu()
     {
@@ -219,6 +222,13 @@ public class MainActivity extends AppCompatActivity
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+/**** Right menu (categories) ****/
+
+    public void searchBar(MenuItem item)
+    {
+        SearchView searchView = findViewById(R.id.app_bar_search);
+        Log.d(TAG, "searchBar: " + searchView.getQuery());
+    }
 
 /*** Post Async ***/
     public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
