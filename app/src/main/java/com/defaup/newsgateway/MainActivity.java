@@ -274,11 +274,12 @@ public class MainActivity extends AppCompatActivity
                 ((TextView) getSupportActionBar().getCustomView()).getText().toString());
         outState.putInt("PAGER_INDEX",pager.getCurrentItem());
 
-        int pagerIndex = pager.getCurrentItem();
+        //int pagerIndex = pager.getCurrentItem();
         //Log.d(TAG, "onSaveInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
 
         outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
         outState.putSerializable("ARTICLES", (ArrayList)articles);
+        outState.putSerializable("COLOR_MAP", (HashMap)colorMap);
 
         //Log.d(TAG, "onSaveInstanceState: article: " + articles.get(pagerIndex).title);
         super.onSaveInstanceState(outState);
@@ -294,12 +295,15 @@ public class MainActivity extends AppCompatActivity
 
         int pagerIndex = savedInstanceState.getInt("PAGER_INDEX");
 
-        updateTreeMap(
-                (Map<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
+        updateTreeMap((Map<String, ArrayList<Source>>)savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
         List<Article> articles = (ArrayList)savedInstanceState.getSerializable("ARTICLES");
 
-
-        Log.d(TAG, "onRestoreInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
+        //the color map must be saved and restored as in this method we update the left menu which needs the color map
+        //the right menu which usually build the map is called after. he will update the map with the same values so it's still sync.
+        colorMap.clear();
+        colorMap.putAll((HashMap)savedInstanceState.getSerializable("COLOR_MAP"));
+        
+//        Log.d(TAG, "onRestoreInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
 //        List<Fragment> al = getSupportFragmentManager().getFragments();
 //        if (al != null) {
 //            for (Fragment frag : al)
