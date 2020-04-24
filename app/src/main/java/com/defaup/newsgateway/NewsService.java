@@ -22,7 +22,7 @@ public class NewsService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Log.d(TAG, "onStartCommand: ");
+        //Log.d(TAG, "onStartCommand: ");
 
         serviceReceiver = new ServiceReceiver();
         IntentFilter filter = new IntentFilter(getApplicationContext().getString(R.string.INTENT_TO_SERVICE));
@@ -34,7 +34,7 @@ public class NewsService extends Service
     @Override
     public void onDestroy()
     {
-        Log.d(TAG, "onDestroy: ");
+        //Log.d(TAG, "onDestroy: ");
         unregisterReceiver(serviceReceiver);
         super.onDestroy();
     }
@@ -64,7 +64,7 @@ public class NewsService extends Service
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
                 source = (Source) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
-                Log.d(TAG, "onReceive: " + source.getName());
+                //Log.d(TAG, "onReceive: " + source.getName());
 
                 new AsyncArticleDownloader(NewsService.this, source.getId(), context).execute();
             }

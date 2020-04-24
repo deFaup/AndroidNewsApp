@@ -27,12 +27,14 @@ public class FragmentArticle extends Fragment
 {
     private static final String TAG = "Greg_FragmentArticle";
     private String articleUrl;
+    //private String articleIndex;
 
     public FragmentArticle(){};
 
     static public FragmentArticle newInstance
             (Article article, int index, int max)
     {
+        //Log.d(TAG, "newInstance: ");
         FragmentArticle fragment = new FragmentArticle();
         Bundle bundle = new Bundle();
         bundle.putSerializable("ARTICLE_OBJECT", article);
@@ -56,6 +58,9 @@ public class FragmentArticle extends Fragment
         if (article == null) return null;
         this.articleUrl = article.url;
 
+        //this.articleIndex = args.getString("ARTICLE_INDEX");
+        //Log.d(TAG, "onCreateView: " + articleIndex);
+
         LinearLayout linearLayout = fragmentView.findViewById(R.id.fragmentLinearLayout);
         TextView textView;
 
@@ -67,6 +72,7 @@ public class FragmentArticle extends Fragment
             textView.setTextSize(24);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setTypeface(Typeface.DEFAULT_BOLD);
+            textView.setPadding(0,0,0,5);
             setOnClick(textView);
             linearLayout.addView(textView);
         }
@@ -159,6 +165,18 @@ public class FragmentArticle extends Fragment
             startActivity(intent);
         }
     });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //Log.d(TAG, "onDestroyView: "+ articleIndex);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        //Log.d(TAG, "onDetach: "+ articleIndex);
     }
 
 }

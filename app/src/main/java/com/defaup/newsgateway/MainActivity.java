@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: ");
+        //Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
         setCustomActionBar(); // need to be done before adding the drawer to the action bar
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.d(TAG, "onCreateOptionsMenu: ");
+        //Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about item without this
         main_menu = menu;
 
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity
         title.setText(drawerItemList.get(position).getName());
 
         // Send brodacast to Service
-        Log.d(TAG, "onLeftMenuItemClicked: sending broadcast to Service");
+        //Log.d(TAG, "onLeftMenuItemClicked: sending broadcast to Service");
         Intent intent = new Intent(getString(R.string.INTENT_TO_SERVICE));
         intent.putExtra(Intent.ACTION_ATTACH_DATA, drawerItemList.get(position));
         sendBroadcast(intent);
@@ -209,13 +209,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Log.d(TAG, "onPostCreate: ");
+        //Log.d(TAG, "onPostCreate: ");
         actionBarDrawerToggle.syncState();
     }
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "onConfigurationChanged: ");
+        //Log.d(TAG, "onConfigurationChanged: ");
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -225,14 +225,14 @@ public class MainActivity extends AppCompatActivity
     public void searchBar(MenuItem item)
     {
         SearchView searchView = findViewById(R.id.app_bar_search);
-        Log.d(TAG, "searchBar: " + searchView.getQuery());
+        //Log.d(TAG, "searchBar: " + searchView.getQuery());
     }
 
 
 /*** Post Async ***/
     public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
     {
-        Log.d(TAG, "onPostSourceDownload: ");
+        //Log.d(TAG, "onPostSourceDownload: ");
         updateTreeMap(sourcesMap);
         updateRightMenu(sourcesMap);
     }
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
-        Log.d(TAG, "onSaveInstanceState: ");
+        //Log.d(TAG, "onSaveInstanceState: ");
         outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
         outState.putInt("PAGER_INDEX",pager.getCurrentItem());
 
@@ -259,13 +259,13 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.d(TAG, "restoreInstanceState: ");
+        //Log.d(TAG, "restoreInstanceState: ");
 
         chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
         int pagerIndex = savedInstanceState.getInt("PAGER_INDEX");
         List<Article> articles = (ArrayList)savedInstanceState.getSerializable("ARTICLES");
 
-        Log.d(TAG, "onRestoreInstanceState: pagerIndex=" + pagerIndex);
+        //Log.d(TAG, "onRestoreInstanceState: pagerIndex=" + pagerIndex);
 
         if(articles != null)
             background.setVisibility(View.GONE);
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume()
     {
-        Log.d(TAG, "onResume: ");
+        //Log.d(TAG, "onResume: ");
         IntentFilter intentFilter = new IntentFilter(getString(R.string.INTENT_TO_MAIN));
         registerReceiver(newsReceiver, intentFilter);
 
@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity
             {
                 List<Article> articles = (ArrayList) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
                 updateViewPager(articles);
-                Log.d(TAG, "MainActivity onReceive: ");
+                //Log.d(TAG, "MainActivity onReceive: ");
             }
         }
     }
@@ -388,6 +388,12 @@ public class MainActivity extends AppCompatActivity
 
         pageAdapter.notifyDataSetChanged();
         pager.setCurrentItem(currentItem);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
     }
 }
 
