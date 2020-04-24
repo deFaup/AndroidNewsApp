@@ -72,11 +72,6 @@ public class MainActivity extends AppCompatActivity
 
         createLeftMenu();
 
-        // Start service: MainAct broadcast to its service the news source whose articles need to
-        // be downloaded. When this is done the service do the reverse and send back the articles
-        Intent intent = new Intent(MainActivity.this, NewsService.class);
-        startService(intent);
-
         // MainActiviy receiver: NewsReceiver
         newsReceiver = new NewsReceiver();
 
@@ -109,6 +104,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(title);
     }
+
 
 /**** Right menu (categories) ****/
 
@@ -148,6 +144,7 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
 
 /**** Left menu (drawer with sources) ****/
 
@@ -222,13 +219,15 @@ public class MainActivity extends AppCompatActivity
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-/**** Right menu (categories) ****/
+
+/**** Search bar ****/
 
     public void searchBar(MenuItem item)
     {
         SearchView searchView = findViewById(R.id.app_bar_search);
         Log.d(TAG, "searchBar: " + searchView.getQuery());
     }
+
 
 /*** Post Async ***/
     public void onPostSourceDownload(Map<String, ArrayList<Source>> sourcesMap)
@@ -244,7 +243,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-/*** Save state ***/
+/*** Save and Restore state ***/
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
@@ -288,6 +287,12 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onResume: ");
         IntentFilter intentFilter = new IntentFilter(getString(R.string.INTENT_TO_MAIN));
         registerReceiver(newsReceiver, intentFilter);
+
+        // Start service: MainAct broadcast to its service the news source whose articles need to
+        // be downloaded. When this is done the service do the reverse and send back the articles
+        // when the app is hidden (by another app) the service is destroyed. so make a new one
+        Intent intent = new Intent(MainActivity.this, NewsService.class);
+        startService(intent);
         super.onResume();
     }
     @Override
