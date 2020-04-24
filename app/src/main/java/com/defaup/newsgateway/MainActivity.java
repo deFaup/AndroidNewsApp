@@ -251,10 +251,17 @@ public class MainActivity extends AppCompatActivity
     {
         //Log.d(TAG, "onSaveInstanceState: ");
         outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
+        outState.putString("MEDIA_SOURCE",
+                ((TextView) getSupportActionBar().getCustomView()).getText().toString());
         outState.putInt("PAGER_INDEX",pager.getCurrentItem());
+
+        int pagerIndex = pager.getCurrentItem();
+        Log.d(TAG, "onSaveInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
 
         outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
         outState.putSerializable("ARTICLES", (ArrayList)articles);
+
+        //Log.d(TAG, "onSaveInstanceState: article: " + articles.get(pagerIndex).title);
         super.onSaveInstanceState(outState);
     }
     @Override
@@ -264,16 +271,21 @@ public class MainActivity extends AppCompatActivity
         //Log.d(TAG, "restoreInstanceState: ");
 
         chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
+        ((TextView) getSupportActionBar().getCustomView()).
+                setText(savedInstanceState.getString("MEDIA_SOURCE"));
+
         int pagerIndex = savedInstanceState.getInt("PAGER_INDEX");
+
+        updateTreeMap(
+                (Map<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
         List<Article> articles = (ArrayList)savedInstanceState.getSerializable("ARTICLES");
 
-        //Log.d(TAG, "onRestoreInstanceState: pagerIndex=" + pagerIndex);
+
+        Log.d(TAG, "onRestoreInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
+        updateViewPager(articles, pagerIndex);
 
         if(articles != null)
             background.setVisibility(View.GONE);
-        updateViewPager(articles, pagerIndex);
-        updateTreeMap(
-                (Map<String, ArrayList<Source>>) savedInstanceState.getSerializable(getString(R.string.HASHMAP)));
 
         // build right menu not possible
         // build left menu OK
@@ -327,7 +339,7 @@ public class MainActivity extends AppCompatActivity
 
 
 /*** ViewPager Adapter and Fragment ***/
-    private class PageViewerAdapter extends FragmentPagerAdapter
+    private class PageViewerAdapter extends FragmentStatePagerAdapter
     {
         private long baseId = 0;
 
@@ -350,13 +362,13 @@ public class MainActivity extends AppCompatActivity
         public int getCount() {
             return fragments.size();
         }
-
+/*
         @Override
         public long getItemId(int position) {
             // give an ID different from position when position has been changed
             return baseId + position;
         }
-
+*/
         /**
          * Notify that the position of a fragment has been changed.
          * Create a new ID for each position to force recreation of the fragment
@@ -373,12 +385,13 @@ public class MainActivity extends AppCompatActivity
     }
     private void updateViewPager(List<Article> articles, int currentItem)
     {
-        if(articles == null || articles.isEmpty())
+        Log.d(TAG, "updateViewPager: ");
+        if(articles == null)
             return;
 
         this.articles = articles;
-        for (int i = 0; i < pageAdapter.getCount(); i++)
-            pageAdapter.notifyChangeInPosition(i);
+    //    for (int i = 0; i < pageAdapter.getCount(); i++)
+    //        pageAdapter.notifyChangeInPosition(i);
 
         fragments.clear();
         for (int i = 0; i < articles.size(); i++)
@@ -390,6 +403,7 @@ public class MainActivity extends AppCompatActivity
 
         pageAdapter.notifyDataSetChanged();
         pager.setCurrentItem(currentItem);
+        Log.d(TAG, "updateViewPager: currentItem set: " + pager.getCurrentItem());
     }
 
     @Override
