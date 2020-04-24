@@ -92,7 +92,7 @@ class AsyncArticleDownloader extends AsyncTask<Void, Void, ArrayList<Article>>
                 for (int i = 0; i < articlesArray.length(); ++i)
                 {
                     JSONObject articleObject = articlesArray.getJSONObject(i);
-
+                    // exception safe as values are always given; empty string if no value
                     Article article = new Article(
                             articleObject.getString("author"),
                             articleObject.getString("title"),
