@@ -20,6 +20,8 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -31,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     private ListView drawerListView;
     private List<Source> drawerItemList = new ArrayList<>();
+    private Map<String,Integer> colorMap = new HashMap<>();
 
     private static final String TAG = "Greg_MainActivity";
 
@@ -122,8 +126,23 @@ public class MainActivity extends AppCompatActivity
     }
     private void updateRightMenu(Map<String, ArrayList<Source>> sourcesMap)
     {
+        int[] color = {Color.BLACK,Color.DKGRAY,Color.LTGRAY,Color.RED,Color.GREEN,Color.BLUE,Color.YELLOW,Color.CYAN,Color.MAGENTA};
         for(String key: sourcesMap.keySet())
             main_menu.add(key);
+
+        for (int i = 0; i < main_menu.size();++i)
+        {
+            MenuItem menuItem = main_menu.getItem(i);
+            if(menuItem.getItemId()==R.id.menuAbout ||
+                actionBarDrawerToggle.onOptionsItemSelected(menuItem) ||
+                menuItem.getItemId()==R.id.app_bar_search)
+                continue;
+
+            colorMap.put(menuItem.getTitle().toString(), color[i%color.length]);
+            SpannableString spanString = new SpannableString(menuItem.getTitle().toString());
+            spanString.setSpan(new ForegroundColorSpan(color[i%color.length]), 0, spanString.length(), 0);
+            menuItem.setTitle(spanString);
+        }
     }
     // RIGHT Menu handle (menu item)
     @Override
@@ -157,7 +176,7 @@ public class MainActivity extends AppCompatActivity
         drawerListView = findViewById(R.id.drawerList);
 
         SourceAdapter sourceAdapter =
-                new SourceAdapter(this, R.layout.drawer_layout_item, drawerItemList);
+                new SourceAdapter(this, R.layout.drawer_layout_item, drawerItemList, colorMap);
         drawerListView.setAdapter(sourceAdapter);
 
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {

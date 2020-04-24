@@ -11,14 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 class SourceAdapter extends ArrayAdapter<Source>
 {
     private List<Source> sources;
-    SourceAdapter(@NonNull Context context, int resource, @NonNull List<Source> sources)
+    private Map<String,Integer> colorMap;
+
+    SourceAdapter(@NonNull Context context, int layoutID, @NonNull List<Source> sources, Map<String,Integer> colorMap)
     {
-        super(context, resource, sources);
+        super(context, layoutID, sources);
         this.sources = sources;
+        this.colorMap = colorMap;
     }
 
     @NonNull
@@ -31,6 +35,7 @@ class SourceAdapter extends ArrayAdapter<Source>
         String sourceName = sources.get(position).getName();
         TextView drawerItem = convertView.findViewById(R.id.drawerEntry);
         drawerItem.setText(sourceName);
+        drawerItem.setTextColor(colorMap.get(sources.get(position).getCategory()));
         return convertView;
     }
 }
