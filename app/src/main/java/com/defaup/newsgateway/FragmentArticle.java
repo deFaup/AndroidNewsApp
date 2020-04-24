@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
@@ -28,14 +30,14 @@ public class FragmentArticle extends Fragment
 {
     private static final String TAG = "Greg_FragmentArticle";
     private String articleUrl;
-    //private String articleIndex;
+    private String articleIndex;
 
     public FragmentArticle(){};
 
     static public FragmentArticle newInstance
             (Article article, int index, int max)
     {
-        //Log.d(TAG, "newInstance: ");
+        Log.d(TAG, "newInstance: " + index + " of " + max);
         FragmentArticle fragment = new FragmentArticle();
         Bundle bundle = new Bundle();
         bundle.putSerializable("ARTICLE_OBJECT", article);
@@ -59,8 +61,8 @@ public class FragmentArticle extends Fragment
         if (article == null) return null;
         this.articleUrl = article.url;
 
-        //this.articleIndex = args.getString("ARTICLE_INDEX");
-        //Log.d(TAG, "onCreateView: " + articleIndex);
+        this.articleIndex = args.getString("ARTICLE_INDEX");
+        Log.d(TAG, "onCreateView: " + args.getString("ARTICLE_INDEX") + " " + article.title);
 
         LinearLayout linearLayout = fragmentView.findViewById(R.id.fragmentLinearLayout);
         TextView textView;
@@ -174,15 +176,47 @@ public class FragmentArticle extends Fragment
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: " + getArguments().getString("ARTICLE_INDEX"));
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState: "+ articleIndex);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //MainActivity mainActivity = getActivity();
+
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: " + articleIndex);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        //Log.d(TAG, "onDestroyView: "+ articleIndex);
+        Log.d(TAG, "onDestroyView: "+ articleIndex);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: " + articleIndex);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        //Log.d(TAG, "onDetach: "+ articleIndex);
+        Log.d(TAG, "onDetach: "+ articleIndex);
     }
 
 }
