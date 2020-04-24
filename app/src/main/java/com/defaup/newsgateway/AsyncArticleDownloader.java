@@ -14,8 +14,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-class AsyncArticleDownloader extends AsyncTask<Void, Void, ArrayList<Article>>
+class AsyncArticleDownloader extends AsyncTask<Void, Void, List<Article>>
 {
     private NewsService newsService;
     private String id;
@@ -29,7 +30,7 @@ class AsyncArticleDownloader extends AsyncTask<Void, Void, ArrayList<Article>>
     }
 
     @Override
-    protected ArrayList<Article> doInBackground(Void... voids)
+    protected List<Article> doInBackground(Void... voids)
     {
         JSONObject jsonObject = getArticles();
         if (jsonObject == null)
@@ -38,9 +39,10 @@ class AsyncArticleDownloader extends AsyncTask<Void, Void, ArrayList<Article>>
         return parseArticles(jsonObject);
     }
     @Override
-    protected void onPostExecute(ArrayList<Article> articles)
+    protected void onPostExecute(List<Article> articles)
     {
-        newsService.setArticles(articles);
+        if(articles != null)
+            newsService.setArticles(articles);
     }
 
     private JSONObject getArticles()
@@ -81,9 +83,9 @@ class AsyncArticleDownloader extends AsyncTask<Void, Void, ArrayList<Article>>
             return jsonObject;
         }
     }
-    private ArrayList<Article> parseArticles(JSONObject jsonObject)
+    private List<Article> parseArticles(JSONObject jsonObject)
     {
-        ArrayList<Article> articles = new ArrayList<>();
+        List<Article> articles = new ArrayList<>();
 
         try {
             if (jsonObject.has("articles"))

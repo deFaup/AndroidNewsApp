@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NewsService extends Service
 {
@@ -40,13 +41,12 @@ public class NewsService extends Service
     }
 
     // send articles to MainActivity through a broadcast
-    public void setArticles(ArrayList<Article> articles)
+    public void setArticles(List<Article> articles)
     {
-        this.articles.clear();
-        this.articles.addAll(articles);
-
+        if(articles == null)
+            return;
         Intent intent = new Intent(getApplicationContext().getString(R.string.INTENT_TO_MAIN));
-        intent.putExtra(Intent.ACTION_ATTACH_DATA, articles);
+        intent.putExtra(Intent.ACTION_ATTACH_DATA, (ArrayList) articles);
         sendBroadcast(intent);
     }
 
