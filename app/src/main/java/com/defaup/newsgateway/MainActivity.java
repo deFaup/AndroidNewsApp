@@ -87,10 +87,6 @@ public class MainActivity extends AppCompatActivity
 
         // Background (background present while no articles have been displayed)
         background = findViewById(R.id.background);
-
-        // Download news sources (need to be completed after onCreateOptionsMenu otherwise nullptr excep on main_menu)
-        if (savedInstanceState == null)
-            new AsyncSourceDownload(this).execute();
     }
 
     public static void setCustomActionBar(AppCompatActivity activity)
@@ -122,6 +118,10 @@ public class MainActivity extends AppCompatActivity
         // Restore the menu after rotation
         if(!sourcesMap.isEmpty())
             updateRightMenu(this.sourcesMap);
+        else {
+            // Download news sources (download here to be sure that main_menu is not null)
+                new AsyncSourceDownload(this).execute();
+        }
         return super.onCreateOptionsMenu(menu);
     }
     private void updateRightMenu(Map<String, ArrayList<Source>> sourcesMap)
