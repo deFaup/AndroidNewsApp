@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -139,10 +140,15 @@ public class FragmentArticle extends Fragment
             textView = new TextView(getContext());
             textView.setPadding(0,12,0,0);
             textView.setTextColor(Color.BLACK);
-            textView.setText(article.description);
             textView.setTextSize(18);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
             setOnClick(textView);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                textView.setText(Html.fromHtml(article.description,Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                textView.setText(Html.fromHtml(article.description));
+            }
             linearLayout.addView(textView);
         }
 
