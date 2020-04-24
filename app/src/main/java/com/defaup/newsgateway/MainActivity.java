@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.BroadcastReceiver;
@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity
         // Save the news category selected by the user to restore it when needed
         chosenCategory = item.getTitle().toString();
         updateLeftMenu(chosenCategory);
+        drawerLayout.openDrawer(drawerListView);
 
         return true;
     }
@@ -249,14 +250,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState)
     {
-        //Log.d(TAG, "onSaveInstanceState: ");
         outState.putString(getString(R.string.NEWS_CATEGORY), chosenCategory);
         outState.putString("MEDIA_SOURCE",
                 ((TextView) getSupportActionBar().getCustomView()).getText().toString());
         outState.putInt("PAGER_INDEX",pager.getCurrentItem());
 
         int pagerIndex = pager.getCurrentItem();
-        Log.d(TAG, "onSaveInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
+        //Log.d(TAG, "onSaveInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
 
         outState.putSerializable(getString(R.string.HASHMAP), (TreeMap)sourcesMap);
         outState.putSerializable("ARTICLES", (ArrayList)articles);
@@ -268,7 +268,6 @@ public class MainActivity extends AppCompatActivity
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        //Log.d(TAG, "restoreInstanceState: ");
 
         chosenCategory = savedInstanceState.getString(getString(R.string.NEWS_CATEGORY));
         ((TextView) getSupportActionBar().getCustomView()).
@@ -282,6 +281,17 @@ public class MainActivity extends AppCompatActivity
 
 
         Log.d(TAG, "onRestoreInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
+//        List<Fragment> al = getSupportFragmentManager().getFragments();
+//        if (al != null) {
+//            for (Fragment frag : al)
+//                getSupportFragmentManager().beginTransaction().remove(frag).commit();
+//        }
+//        al.clear();
+/*        So what I see is that fragments that exists before flipping the phone are saved/destroyed/detached/ re created
+          I'd like to delete them before creating new ones but if I do the above I can't update.
+          But updating without deleting them works ..
+          I could tag them, then update then delete them. Haven't tried that
+ */
         updateViewPager(articles, pagerIndex);
 
         if(articles != null)
@@ -385,7 +395,7 @@ public class MainActivity extends AppCompatActivity
     }
     private void updateViewPager(List<Article> articles, int currentItem)
     {
-        Log.d(TAG, "updateViewPager: ");
+        //Log.d(TAG, "updateViewPager: ");
         if(articles == null)
             return;
 
@@ -403,7 +413,7 @@ public class MainActivity extends AppCompatActivity
 
         pageAdapter.notifyDataSetChanged();
         pager.setCurrentItem(currentItem);
-        Log.d(TAG, "updateViewPager: currentItem set: " + pager.getCurrentItem());
+        //Log.d(TAG, "updateViewPager: currentItem set: " + pager.getCurrentItem());
     }
 
     @Override
@@ -418,18 +428,31 @@ public class MainActivity extends AppCompatActivity
     onCreate:
     onStart:
     onPostCreate:
+        NewsService: onStartCommand:
     onCreateOptionsMenu:
     onPostSourceDownload:
+        onLeftMenuItemClicked
+        NewsService: onReceive
+        FragmentArticle: newInstance
+        FragmentArticle: onCreateView
+        FragmentArticle: onCreateView
 
     // screeen is tilted
     onSaveInstanceState:
+    onDestroy
+    FragmentArticle: onDestroyView
+    FragmentArticle: onDetach
 
     onCreate:
     onStart:
+        FragmentArticle: onCreateView
     onRestoreInstanceState:
     onPostCreate:
+        NewsService: onDestroy:
+        NewsService: onStartCommand
     onCreateOptionsMenu: -- RIGHT menu is created after restore ! so we can't fill the menu dynamically the menu before that point
     onPostSourceDownload:
+
 
     To restore menu:
     onSaveInstanceState:
