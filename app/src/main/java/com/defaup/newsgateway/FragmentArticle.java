@@ -2,10 +2,12 @@ package com.defaup.newsgateway;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +59,7 @@ public class FragmentArticle extends Fragment
         LinearLayout linearLayout = fragmentView.findViewById(R.id.fragmentLinearLayout);
         TextView textView;
 
-        if (article.title != null)
+        if (article.title != null && !article.title.isEmpty())
         {
             textView = new TextView(getContext());
             textView.setTextColor(Color.BLACK);
@@ -68,7 +70,7 @@ public class FragmentArticle extends Fragment
             setOnClick(textView);
             linearLayout.addView(textView);
         }
-        if (article.publishedAt != null)
+        if (article.publishedAt != null && !article.publishedAt.isEmpty())
         {
             // we have this pattern "2013-03-05T18:05:05Z"
             String parsedDate = article.publishedAt;
@@ -80,37 +82,56 @@ public class FragmentArticle extends Fragment
             catch (ParseException e) { e.printStackTrace();}
 
             textView = new TextView(getContext());
+            textView.setPadding(0,12,0,0);
             textView.setTextColor(Color.BLACK);
             textView.setText(parsedDate);
             textView.setTextSize(14);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-
             linearLayout.addView(textView);
         }
-        if (article.author != null)
+        if (article.author != null && !article.author.isEmpty())
         {
             textView = new TextView(getContext());
+            textView.setPadding(0,8,0,0);
             textView.setTextColor(Color.BLACK);
             textView.setText(article.author);
             textView.setTextSize(14);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-
+            textView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
             linearLayout.addView(textView);
         }
-        if(article.urlToImage != null)
+        {
+            ImageView separator = new ImageView(getContext());
+            separator.setPadding(0,8,0,0);
+            separator.setImageDrawable(getContext().getDrawable(R.drawable.separator));
+            linearLayout.addView(separator);
+        }
+        if(article.urlToImage != null && !article.urlToImage.isEmpty())
         {
             Picasso picasso = new Picasso.Builder(getContext()).build();
 
             ImageView imageView = new ImageView(getContext());
+            imageView.setPadding(0,28,0,0);
+
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int screenHeight = size.y;
+
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, (int)(screenHeight*0.30)));
+            //imageView.setScaleType(ImageView.ScaleType.FIT_START);
+
             picasso.load(article.urlToImage).error(R.drawable.brokenimage)
                     .placeholder(R.drawable.placeholder)
                     .into(imageView);
             setOnClick(imageView);
             linearLayout.addView(imageView);
         }
-        if (article.description != null)
+        if (article.description != null && !article.description.isEmpty())
         {
             textView = new TextView(getContext());
+            textView.setPadding(0,12,0,0);
             textView.setTextColor(Color.BLACK);
             textView.setText(article.description);
             textView.setTextSize(18);
@@ -121,13 +142,8 @@ public class FragmentArticle extends Fragment
 
         if (args.getString("ARTICLE_INDEX") != null)
         {
-            textView = new TextView(getContext());
-            textView.setTextColor(Color.BLACK);
-            textView.setText(args.getString("ARTICLE_INDEX"));
-            textView.setTextSize(15);
-            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            textView.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
-            linearLayout.addView(textView);
+            TextView pagerIndex = fragmentView.findViewById(R.id.pagerIndex);
+            pagerIndex.setText(args.getString("ARTICLE_INDEX"));
         }
         return fragmentView;
     }
