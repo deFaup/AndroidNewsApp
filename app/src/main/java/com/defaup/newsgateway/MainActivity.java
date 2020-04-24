@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         //Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_main);
-        setCustomActionBar(); // need to be done before adding the drawer to the action bar
-
+        setCustomActionBar(this); // need to be done before adding the drawer to the action bar
         createLeftMenu();
 
         // MainActiviy receiver: NewsReceiver
@@ -90,19 +89,19 @@ public class MainActivity extends AppCompatActivity
             new AsyncSourceDownload(this).execute();
     }
 
-    private void setCustomActionBar()
+    public static void setCustomActionBar(AppCompatActivity activity)
     {
-        TextView title = new TextView(this);
+        TextView title = new TextView(activity);
         title.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT));
         //NOT working for action bar //title.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        title.setText(getString(R.string.app_name));
+        title.setText(activity.getString(R.string.app_name));
         title.setTextColor(Color.BLACK);
         title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         title.setGravity(Gravity.CENTER);
         title.setTextSize(22);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(title);
+        activity.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        activity.getSupportActionBar().setCustomView(title);
     }
 
 
