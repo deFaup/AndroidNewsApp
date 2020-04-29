@@ -19,7 +19,12 @@ public class AboutActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        //MainActivity.setCustomActionBar(this);
+        MainActivity.setCustomActionBar(this);
+        if (getSupportActionBar() != null)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
 
         TextView aboutNewsApi = (TextView)findViewById(R.id.aboutNewsAPI);
         aboutNewsApi.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
