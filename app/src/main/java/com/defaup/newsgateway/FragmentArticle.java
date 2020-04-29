@@ -39,7 +39,7 @@ public class FragmentArticle extends Fragment
     static public FragmentArticle newInstance
             (Article article, int index, int max)
     {
-        Log.d(TAG, "newInstance: " + index + " of " + max);
+        //Log.d(TAG, "newInstance: " + index + " of " + max);
         FragmentArticle fragment = new FragmentArticle();
         Bundle bundle = new Bundle();
         bundle.putSerializable("ARTICLE_OBJECT", article);
@@ -70,7 +70,7 @@ public class FragmentArticle extends Fragment
         TextView textView;
         boolean articleHasImage=false, articleHasDescription=false;
 
-        if (article.title != null && (!article.title.isEmpty() && !article.title.equals("null")))
+        if (isValidString(article.title))
         {
             textView = new TextView(getContext());
             textView.setTextColor(Color.BLACK);
@@ -82,7 +82,7 @@ public class FragmentArticle extends Fragment
             setOnClick(textView);
             linearLayout.addView(textView);
         }
-        if (article.publishedAt != null && (!article.publishedAt.isEmpty() && !article.publishedAt.equals("null")))
+        if (isValidString(article.publishedAt))
         {
             // we have this pattern "2013-03-05T18:05:05Z"
             String parsedDate = article.publishedAt;
@@ -101,7 +101,7 @@ public class FragmentArticle extends Fragment
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
             linearLayout.addView(textView);
         }
-        if (article.author != null && (!article.author.isEmpty() && !article.author.equals("null")))
+        if (isValidString(article.author))
         {
             textView = new TextView(getContext());
             textView.setPadding(0,8,0,0);
@@ -118,7 +118,7 @@ public class FragmentArticle extends Fragment
             separator.setImageDrawable(getContext().getDrawable(R.drawable.separator));
             linearLayout.addView(separator);
         }
-        if(article.urlToImage != null && (!article.urlToImage.isEmpty() && !article.urlToImage.equals("null")))
+        if(isValidString(article.urlToImage))
         {
             articleHasImage = true;
             Picasso picasso = new Picasso.Builder(getContext()).build();
@@ -141,7 +141,7 @@ public class FragmentArticle extends Fragment
             setOnClick(imageView);
             linearLayout.addView(imageView);
         }
-        if (article.description != null && (!article.description.isEmpty() && !article.description.equals("null")))
+        if (isValidString(article.description))
         {
             articleHasDescription = true;
 
@@ -189,49 +189,50 @@ public class FragmentArticle extends Fragment
         }
     });
     }
+    private boolean isValidString(String input)
+    {
+        return (input != null && (!input.isEmpty() && !input.equals("null")));
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: " + getArguments().getString("ARTICLE_INDEX"));
+        //Log.d(TAG, "onCreate: " + getArguments().getString("ARTICLE_INDEX"));
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState: "+ articleIndex);
+        //Log.d(TAG, "onSaveInstanceState: "+ articleIndex);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //MainActivity mainActivity = getActivity();
-
-
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: " + articleIndex);
+        //Log.d(TAG, "onStop: " + articleIndex);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, "onDestroyView: "+ articleIndex);
+        //Log.d(TAG, "onDestroyView: "+ articleIndex);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: " + articleIndex);
+        //Log.d(TAG, "onDestroy: " + articleIndex);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d(TAG, "onDetach: "+ articleIndex);
+        //Log.d(TAG, "onDetach: "+ articleIndex);
     }
 
 }
