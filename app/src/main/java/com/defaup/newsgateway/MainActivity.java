@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity
         //the right menu which usually build the map is called after. he will update the map with the same values so it's still sync.
         colorMap.clear();
         colorMap.putAll((HashMap)savedInstanceState.getSerializable("COLOR_MAP"));
-        
+
 //        Log.d(TAG, "onRestoreInstanceState: category=" + chosenCategory + "/index= " + pagerIndex);
 //        List<Fragment> al = getSupportFragmentManager().getFragments();
 //        if (al != null) {

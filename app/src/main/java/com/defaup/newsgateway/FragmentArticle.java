@@ -12,6 +12,8 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -62,12 +64,13 @@ public class FragmentArticle extends Fragment
         this.articleUrl = article.url;
 
         this.articleIndex = args.getString("ARTICLE_INDEX");
-        Log.d(TAG, "onCreateView: " + args.getString("ARTICLE_INDEX") + " " + article.title);
+        //Log.d(TAG, "onCreateView: " + args.getString("ARTICLE_INDEX") + " " + article.title);
 
         LinearLayout linearLayout = fragmentView.findViewById(R.id.fragmentLinearLayout);
         TextView textView;
+        boolean articleHasImage=false, articleHasDescription=false;
 
-        if (article.title != null && !article.title.isEmpty())
+        if (article.title != null && (!article.title.isEmpty() && !article.title.equals("null")))
         {
             textView = new TextView(getContext());
             textView.setTextColor(Color.BLACK);
@@ -79,7 +82,7 @@ public class FragmentArticle extends Fragment
             setOnClick(textView);
             linearLayout.addView(textView);
         }
-        if (article.publishedAt != null && !article.publishedAt.isEmpty())
+        if (article.publishedAt != null && (!article.publishedAt.isEmpty() && !article.publishedAt.equals("null")))
         {
             // we have this pattern "2013-03-05T18:05:05Z"
             String parsedDate = article.publishedAt;
@@ -98,7 +101,7 @@ public class FragmentArticle extends Fragment
             textView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
             linearLayout.addView(textView);
         }
-        if (article.author != null && !article.author.isEmpty())
+        if (article.author != null && (!article.author.isEmpty() && !article.author.equals("null")))
         {
             textView = new TextView(getContext());
             textView.setPadding(0,8,0,0);
@@ -115,8 +118,9 @@ public class FragmentArticle extends Fragment
             separator.setImageDrawable(getContext().getDrawable(R.drawable.separator));
             linearLayout.addView(separator);
         }
-        if(article.urlToImage != null && !article.urlToImage.isEmpty())
+        if(article.urlToImage != null && (!article.urlToImage.isEmpty() && !article.urlToImage.equals("null")))
         {
+            articleHasImage = true;
             Picasso picasso = new Picasso.Builder(getContext()).build();
 
             ImageView imageView = new ImageView(getContext());
@@ -137,8 +141,10 @@ public class FragmentArticle extends Fragment
             setOnClick(imageView);
             linearLayout.addView(imageView);
         }
-        if (article.description != null && !article.description.isEmpty())
+        if (article.description != null && (!article.description.isEmpty() && !article.description.equals("null")))
         {
+            articleHasDescription = true;
+
             textView = new TextView(getContext());
             textView.setPadding(0,12,0,0);
             textView.setTextColor(Color.BLACK);
@@ -158,6 +164,15 @@ public class FragmentArticle extends Fragment
         {
             TextView pagerIndex = fragmentView.findViewById(R.id.pagerIndex);
             pagerIndex.setText(args.getString("ARTICLE_INDEX"));
+        }
+
+        if (!articleHasImage && !articleHasDescription)
+        {
+            linearLayout.removeAllViews();
+            WebView webView = fragmentView.findViewById(R.id.webView);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.setWebViewClient(new WebViewClient());
+            webView.loadUrl(Uri.parse(articleUrl).toString());
         }
         return fragmentView;
     }
