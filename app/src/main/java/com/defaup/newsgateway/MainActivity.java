@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        //Log.d(TAG, "onCreateOptionsMenu: ");
+        Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about item without this
         main_menu = menu;
 
@@ -263,7 +263,14 @@ public class MainActivity extends AppCompatActivity
         this.sourcesMap.clear();
         this.sourcesMap.putAll(sourcesMap);
     }
-
+    // This nice method is apparently called after the menu is attached
+    // we could put some on restore stuff over here
+    /*
+    @Override
+    public void onAttachedToWindow() {
+        //openOptionsMenu();
+        //getSupportActionBar().openOptionsMenu();
+    };*/
 
 /*** Save and Restore state ***/
     @Override
@@ -450,6 +457,7 @@ public class MainActivity extends AppCompatActivity
 /*
     onCreate:
     onStart:
+    onResume:
     onPostCreate:
         NewsService: onStartCommand:
     onCreateOptionsMenu:
