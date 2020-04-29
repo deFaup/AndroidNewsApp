@@ -1,16 +1,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--item name="actionOverflowButtonStyle">@style/BlackOverflowIcon</item-->
+        <!--item name="popupMenuStyle">@style/BlackOverflowMenu</item-->
     </style>
 
-    <style name="MyActionBarTheme"
-        parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:textColorPrimary">#A91AB3</item>
-    </style>
-
+    <!--style name="BlackOverflowIcon" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@android:color/black</item>
+    </style-->
+    <!--style name="BlackOverflowMenu" parent="@style/Widget.AppCompat.Light.ListPopupWindow">
+        <item name="android:popupBackground">@android:color/holo_blue_bright</item>
+        <item name="android:background">@android:color/holo_blue_bright</item>
+    </style-->
 </resources>

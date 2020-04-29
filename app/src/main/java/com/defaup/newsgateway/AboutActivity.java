@@ -23,7 +23,7 @@ public class AboutActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
         {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            //getSupportActionBar().setHomeButtonEnabled(true);
         }
 
         TextView aboutNewsApi = (TextView)findViewById(R.id.aboutNewsAPI);
