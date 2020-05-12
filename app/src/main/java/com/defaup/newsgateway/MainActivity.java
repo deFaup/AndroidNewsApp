@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,11 +16,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -28,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.d(TAG, "onCreateOptionsMenu: ");
+        //Log.d(TAG, "onCreateOptionsMenu: ");
         getMenuInflater().inflate(R.menu.menu_main, menu); //don't have the about item without this
         main_menu = menu;
 
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity
             MenuItem menuItem = main_menu.getItem(i);
             if(menuItem.getItemId()==R.id.menuAbout ||
                 actionBarDrawerToggle.onOptionsItemSelected(menuItem) ||
-                menuItem.getItemId()==R.id.app_bar_search)
+                menuItem.getItemId()==R.id.menuSearch)
                 continue;
 
             colorMap.put(menuItem.getTitle().toString(), color[i%color.length]);
@@ -156,6 +160,10 @@ public class MainActivity extends AppCompatActivity
         {
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
+            return true;
+        }
+        if(item.getItemId() == R.id.menuSearch){
+            searchDialog();
             return true;
         }
 
@@ -220,9 +228,7 @@ public class MainActivity extends AppCompatActivity
 
         // Send brodacast to Service
         //Log.d(TAG, "onLeftMenuItemClicked: sending broadcast to Service");
-        Intent intent = new Intent(getString(R.string.INTENT_TO_SERVICE));
-        intent.putExtra(Intent.ACTION_ATTACH_DATA, drawerItemList.get(position));
-        sendBroadcast(intent);
+        sendSourceToService(drawerItemList.get(position));
 
         drawerLayout.closeDrawer(drawerListView);
     }
@@ -241,13 +247,44 @@ public class MainActivity extends AppCompatActivity
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private void sendSourceToService(Source source)
+    {
+        Intent intent = new Intent(getString(R.string.INTENT_TO_SERVICE));
+        intent.putExtra(Intent.ACTION_ATTACH_DATA, source);
+        sendBroadcast(intent);
+    }
 
 /**** Search bar ****/
 
-    public void searchBar(MenuItem item)
+    private void searchDialog()
     {
-        SearchView searchView = findViewById(R.id.app_bar_search);
-        //Log.d(TAG, "searchBar: " + searchView.getQuery());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        final EditText et = new EditText(this);
+        et.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+        et.setGravity(Gravity.CENTER_HORIZONTAL);
+        et.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        builder.setView(et);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if (et.getText().toString().isEmpty()) return;
+                else{
+                    Source source = new Source(null, et.getText().toString(),null);
+                    sendSourceToService(source);
+                }
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+
+        builder.setTitle("Search worldwide news");
+        builder.setMessage("Enter what you are looking for and find results from over 50,000 news sources and blogs");
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 

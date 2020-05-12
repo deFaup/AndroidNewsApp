@@ -3,16 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        app:actionViewClass="android.widget.SearchView"
-        android:id="@+id/app_bar_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:onClick="searchBar"
-        android:title="Search"
-        android:queryHint="Search Here"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/menuAbout"
         android:icon="@drawable/help"
         android:title="about"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menuSearch"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="search"
         app:showAsAction="always" />
 </menu>
