@@ -2,8 +2,16 @@
     <string name="app_name">News Gateway</string>
     <string name="SOURCE_URL">https://newsapi.org/v2/sources?language=en&amp;country=us&amp;category=&amp;apiKey=</string>
 
-    <string name="ARTICLE_BEGIN_URL">https://newsapi.org/v2/everything?sources=</string>
-    <string name="ARTICLE_END_URL">&amp;language=en&amp;pageSize=100&amp;apiKey=</string>
+    <string name="ARTICLE_BEGIN_URL">https://newsapi.org/v2/</string>
+
+    <string name="ARTICLE_SOURCE">everything?sources=</string>
+    <string name="ARTICLE_QUERY">everything?q=</string>
+    <string name="ARTICLE_PARAM_SORT_RECENT">&amp;sortBy=publishedAt</string>
+    <string name="ARTICLE_PARAM_SORT_POPULARITY">&amp;sortBy=popularity</string>
+    <string name="ARTICLE_PARAM_LANGUAGE_EN">&amp;language=en</string>
+    <string name="ARTICLE_PARAM_LANGUAGE_ES">&amp;language=es</string>
+    <string name="ARTICLE_PARAM_PAGE_SIZE">&amp;pageSize=</string>
+    <string name="ARTICLE_PARAM_KEY">&amp;apiKey=</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
