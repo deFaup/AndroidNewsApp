@@ -19,13 +19,13 @@ import java.util.List;
 class AsyncArticleDownloader extends AsyncTask<Void, Void, List<Article>>
 {
     private NewsService newsService;
-    private String id;
+    private Source source;
     private Context context;
 
-    AsyncArticleDownloader(NewsService newsService, String id, Context context)
+    AsyncArticleDownloader(NewsService newsService, Source source, Context context)
     {
         this.newsService = newsService;
-        this.id = id;
+        this.source = source;
         this.context = context;
     }
 
@@ -47,14 +47,28 @@ class AsyncArticleDownloader extends AsyncTask<Void, Void, List<Article>>
 
     private JSONObject getArticles()
     {
-        String url_ = String.format("%s%s%s%s",
-                context.getString(R.string.ARTICLE_BEGIN_URL),
-                id,
-                context.getString(R.string.ARTICLE_END_URL),
-                context.getString(R.string.API_KEY));
+        StringBuilder url_ = new StringBuilder();
+        url_.append(context.getString(R.string.ARTICLE_BEGIN_URL));
+        if(source.getId()==null)
+        {
+            url_.append(context.getString(R.string.ARTICLE_QUERY));
+            url_.append(source.getName()); // not controlling the user input there
+            // in case of a bad input url is wrong then exception is raised & catched
+            // evil input works just fine ex: apple&from=2020-05-02
+        }
+        else
+        {
+            url_.append(context.getString(R.string.ARTICLE_SOURCE));
+            url_.append(source.getId());
+        }
+        url_.append(context.getString(R.string.ARTICLE_PARAM_LANGUAGE_EN));
+        url_.append(context.getString(R.string.ARTICLE_PARAM_PAGE_SIZE)); url_.append(100);
+        url_.append(context.getString(R.string.ARTICLE_PARAM_SORT_RECENT));
+        url_.append(context.getString(R.string.ARTICLE_PARAM_KEY));
+        url_.append(context.getString(R.string.API_KEY));
 
         JSONObject jsonObject = null;
-        String urlToUse = Uri.parse(url_).toString();
+        String urlToUse = Uri.parse(url_.toString()).toString();
 
         try
         {

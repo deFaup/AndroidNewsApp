@@ -65,7 +65,7 @@ public class NewsService extends Service
                 Source source = (Source) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
                 //Log.d(TAG, "onReceive: " + source.getName());
 
-                new AsyncArticleDownloader(NewsService.this, source.getId(), context).execute();
+                new AsyncArticleDownloader(NewsService.this, source, context).execute();
             }
         }
     }
