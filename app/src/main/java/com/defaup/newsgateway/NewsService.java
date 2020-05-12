@@ -60,10 +60,9 @@ public class NewsService extends Service
             String action = intent.getAction();
             if (action == null || !action.equals(getString(R.string.INTENT_TO_SERVICE))) {return;}
 
-            Source source;
             if (intent.hasExtra(Intent.ACTION_ATTACH_DATA))
             {
-                source = (Source) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+                Source source = (Source) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
                 //Log.d(TAG, "onReceive: " + source.getName());
 
                 new AsyncArticleDownloader(NewsService.this, source.getId(), context).execute();
